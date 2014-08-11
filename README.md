@@ -18,7 +18,7 @@ A String extension that allows you to do some very awesome functions efforlessly
 
 
 ### License
-String Tools is under MIT Liscence. Check the liscense file for more information.
+String Tools is under MIT License. Check the license file for more information.
 
 
 ### Contact Info
