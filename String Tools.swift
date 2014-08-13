@@ -149,7 +149,7 @@ extension String{
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error)
         let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
-        let urls = links.map({(t : NSTextCheckingResult) -> NSURL! in
+        let urls = links.map({(t : NSTextCheckingResult) -> NSURL! in /*I'm using mapping beacuase it's cool! 😎*/
             return t.URL})
         return urls
     }
@@ -200,13 +200,13 @@ extension String{
     :returns: [String!]
     */
     func getMentions() ->[String!]{
-        let hashtagDetector = NSRegularExpression(pattern: "@(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
-        let results = hashtagDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
-        let mentionss = results.map({(t : NSTextCheckingResult) -> String! in
+        let mentionDetector = NSRegularExpression(pattern: "@(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
+        let results = mentionDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
+        let mentions = results.map({(t : NSTextCheckingResult) -> String! in
             let range :NSRange = t.rangeAtIndex(0)
             return self.substringWithNSRange(range)})
         
-        return mentionss;
+        return mentions;
     }
     
     /**
