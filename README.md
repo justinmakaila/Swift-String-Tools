@@ -3,18 +3,20 @@
 A String extension that allows you to do some very awesome functions efforlessly. 
 
 ###Functions
-####Linguistics
-1. Detecting Language of a String
-2. Detecting Direction of a String
+Function Name | Description 
+==============|==============
+detectLanguage() -> String! | Returns the length of the String.
+isRightToleft() -> Bool | Check the text direction of a given String.
+isOnlyEmptySpacesAndNewLineCharacters() ->Bool | Check that a String is only made of white spaces, and new line characters.
+isTweetable() -> Bool | Check that a String is 'tweetable'; can be used in a tweet.
+getLinks() -> [String!] | Gets an array of Strings for all links found in a String.
+getURLs() -> [NSURL!] | Gets an array of URLs for all links found in a String.
+getDates() -> [NSDate!] | Gets an array of dates for all dates found in a String
+getHashtags() -> [String!] | Gets an array of strings (hashtags #acme) for all links found in a String.
+getMentions() -> [String!] | Gets an array of strings (mentions @apple) for all mentions found in a String
+containsDate() -> Bool | Check if a String contains a Date in it.
+containsLink() -> Bool | Check if a String contains a link in it.
 
-####Usablity & Social
-1. Detecting if String is only composed of empty, and new line characters.
-2. Decting if a String can be used in a tweet.
-3. Get Links from a String as an Array of Strings or NSURLs.
-4. Get Hashtahs and mentions an Array of Strings.
-5. Get Dates from a String.
-6. Check if a String contains a link.
-7. Check if a String contains a Date.
 
 
 ### License
