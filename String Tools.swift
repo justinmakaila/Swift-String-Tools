@@ -46,9 +46,10 @@ extension String{
     :returns: Returns a string object containing the characters of the `String` that lie within a given range (NSRange).
     
     */
-    func substringWithNSRange(range:NSRange)->String {
+    func substringWithNSRange(range:NSRange)-> String {
+
         let begin = advance(self.startIndex, range.location),
-        finish = advance(self.endIndex, range.location+range.length-countElements(self))
+        finish = advance(self.endIndex, range.location+range.length-self.utf16Count)
         return self.substringWithRange(Range(start:begin, end:finish))
     }
     
@@ -121,7 +122,7 @@ extension String{
             if remaining < 0 {return false}
         }
         else{
-            if self.length() > TweetLength || self.length() == 0 || self.isOnlyEmptySpacesAndNewLineCharacters() {return false}
+            if self.utf16Count > TweetLength || self.utf16Count == 0 || self.isOnlyEmptySpacesAndNewLineCharacters() {return false}
         }
         return true
     }
@@ -134,7 +135,7 @@ extension String{
     func getLinks() ->[String!]{
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error)
-        let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
+        let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         let urlStrings = links.map({(t : NSTextCheckingResult) -> String! in
             return t.URL.absoluteString})
         return urlStrings
@@ -148,7 +149,7 @@ extension String{
     func getURLs() -> [NSURL!]{
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error)
-        let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
+        let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         let urls = links.map({(t : NSTextCheckingResult) -> NSURL! in /*I'm using mapping beacuase it's cool! 😎*/
             return t.URL})
         return urls
@@ -163,7 +164,7 @@ extension String{
     func getDates() ->[NSDate!]{
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Date.toRaw(), error: error)
-        let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
+        let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         let dates = links.map({(t : NSTextCheckingResult) -> NSDate! in
             return t.date})
         return dates
@@ -176,7 +177,7 @@ extension String{
     */
     func getHashtags() ->[String!]{
         let hashtagDetector = NSRegularExpression(pattern: "#(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
-        let results = hashtagDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
+        let results = hashtagDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         let hashtags = results.map({(t : NSTextCheckingResult) -> String! in
             let range :NSRange = t.rangeAtIndex(0)
             return self.substringWithNSRange(range)})
@@ -201,7 +202,7 @@ extension String{
     */
     func getMentions() ->[String!]{
         let mentionDetector = NSRegularExpression(pattern: "@(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
-        let results = mentionDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.length())) as [NSTextCheckingResult]
+        let results = mentionDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         let mentions = results.map({(t : NSTextCheckingResult) -> String! in
             let range :NSRange = t.rangeAtIndex(0)
             return self.substringWithNSRange(range)})
