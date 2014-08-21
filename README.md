@@ -5,7 +5,7 @@ A String extension that allows you to do some very awesome functions efforlessly
 ###Functions
 Function Name | Description 
 --------------|------------
-detectLanguage() -> String! | Returns the length of the String.
+detectLanguage() -> String! | Detects the language of a String.
 isRightToleft() -> Bool | Check the text direction of a given String.
 isOnlyEmptySpacesAndNewLineCharacters() ->Bool | Check that a String is only made of white spaces, and new line characters.
 isTweetable() -> Bool | Check that a String is 'tweetable'; can be used in a tweet.
