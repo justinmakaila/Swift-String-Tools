@@ -33,10 +33,14 @@ extension String{
     
     :returns: Int length of the string.
     */
-    func length() -> Int {
+
+    var length: Int {
         return countElements(self)
     }
     
+    var objcLength: Int {
+        return self.utf16Count
+    }
     /**
     perform substringWithRange using NSRange, without switching the String to an Obj-C NSString
     
@@ -47,7 +51,6 @@ extension String{
     
     */
     func substringWithNSRange(range:NSRange)-> String {
-
         let begin = advance(self.startIndex, range.location),
         finish = advance(self.endIndex, range.location+range.length-self.utf16Count)
         return self.substringWithRange(Range(start:begin, end:finish))
@@ -65,19 +68,18 @@ extension String{
     
     :returns: String! Returns a string representing the langague of the string (e.g. en, fr, or und for undefined).
     */
-    func detectLangague() -> String!{
-        if self.length() > 4{
-            var token : dispatch_once_t = 0;
+    func detectLanguage() -> String! {
+        if self.length > 4 {
+            var token : dispatch_once_t = 0
             var tagger : NSLinguisticTagger?
-            dispatch_once(&token, {
+            dispatch_once(&token) {
                 tagger = NSLinguisticTagger(tagSchemes: [NSLinguisticTagSchemeLanguage], options: 0)
-            })
+            }
             tagger?.string = self
             return tagger?.tagAtIndex(0, scheme: NSLinguisticTagSchemeLanguage, tokenRange: nil, sentenceRange: nil)
         }
-        else{
             return nil
-        }
+        
     }
     
     /**
@@ -88,8 +90,8 @@ extension String{
     :returns: Bool The Bool will return true if the string was writting in a right to left langague (e.g. Arabic, Hebrew)
     
     */
-    func isRightToLeft() ->Bool{
-        let language :String! = self.detectLangague()
+    func isRightToLeft() -> Bool {
+        let language = self.detectLanguage()
         return (language? == "ar" || language? == "he")
     }
     
@@ -102,9 +104,8 @@ extension String{
     
     :returns: Bool
     */
-    func isOnlyEmptySpacesAndNewLineCharacters() ->Bool{
-        let characterSet  = NSCharacterSet.whitespaceAndNewlineCharacterSet()
-        return self.stringByTrimmingCharactersInSet(characterSet).length()==0 ? true : false
+    func isOnlyEmptySpacesAndNewLineCharacters() -> Bool {
+        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).length == 0
     }
     
     
@@ -114,16 +115,16 @@ extension String{
     
     :returns: Bool
     */
-    func isTweetable() ->Bool{
-        let  TweetLength = 140
+    func isTweetable() -> Bool {
+        let tweetLength = 140
         let linksLength = self.getLinks().count * 23
-        let remaining = TweetLength - linksLength
-        if linksLength != 0{
-            if remaining < 0 {return false}
+        let remaining = tweetLength - linksLength
+        if linksLength != 0 {
+            return remaining < 0
+        } else {
+            return !(self.utf16Count > tweetLength || self.utf16Count == 0 || self.isOnlyEmptySpacesAndNewLineCharacters())
         }
-        else{
-            if self.utf16Count > TweetLength || self.utf16Count == 0 || self.isOnlyEmptySpacesAndNewLineCharacters() {return false}
-        }
+
         return true
     }
     
@@ -132,12 +133,15 @@ extension String{
     
     :returns: [String!]
     */
-    func getLinks() ->[String!]{
+    func getLinks() -> [String!] {
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error)
         let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let urlStrings = links.map({(t : NSTextCheckingResult) -> String! in
-            return t.URL.absoluteString})
+        let urlStrings = links.map() {
+            (t : NSTextCheckingResult) -> String! in
+                return t.URL.absoluteString
+        }
+
         return urlStrings
     }
     
@@ -146,12 +150,14 @@ extension String{
     
     :returns: [NSURL!]
     */
-    func getURLs() -> [NSURL!]{
+    func getURLs() -> [NSURL!] {
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error)
         let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let urls = links.map({(t : NSTextCheckingResult) -> NSURL! in /*I'm using mapping beacuase it's cool! 😎*/
-            return t.URL})
+        let urls = links.map() {
+            (t : NSTextCheckingResult) -> NSURL! in /*I'm using mapping beacuase it's cool! 😎*/
+            return t.URL}
+        
         return urls
     }
     
@@ -161,12 +167,15 @@ extension String{
     
     :returns: [NSDate!]
     */
-    func getDates() ->[NSDate!]{
+    func getDates() -> [NSDate!] {
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Date.toRaw(), error: error)
         let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let dates = links.map({(t : NSTextCheckingResult) -> NSDate! in
-            return t.date})
+        let dates = links.map(){
+            (t : NSTextCheckingResult) -> NSDate! in
+            return t.date
+        }
+
         return dates
     }
     
@@ -175,14 +184,16 @@ extension String{
     
     :returns: [String!]
     */
-    func getHashtags() ->[String!]{
+    func getHashtags() -> [String!] {
         let hashtagDetector = NSRegularExpression(pattern: "#(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
         let results = hashtagDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let hashtags = results.map({(t : NSTextCheckingResult) -> String! in
-            let range :NSRange = t.rangeAtIndex(0)
-            return self.substringWithNSRange(range)})
+        let hashtags = results.map(){
+            (t : NSTextCheckingResult) -> String! in
+                let range :NSRange = t.rangeAtIndex(0)
+                return self.substringWithNSRange(range)
+        }
         
-        return hashtags;
+        return hashtags
     }
     
     /**
@@ -200,14 +211,17 @@ extension String{
     
     :returns: [String!]
     */
-    func getMentions() ->[String!]{
+    func getMentions() -> [String!] {
         let mentionDetector = NSRegularExpression(pattern: "@(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
         let results = mentionDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let mentions = results.map({(t : NSTextCheckingResult) -> String! in
-            let range :NSRange = t.rangeAtIndex(0)
-            return self.substringWithNSRange(range)})
+
+        let mentions = results.map() {
+                (t : NSTextCheckingResult) -> String! in
+                let range :NSRange = t.rangeAtIndex(0)
+            return self.substringWithNSRange(range)
+        }
         
-        return mentions;
+        return mentions
     }
     
     /**
@@ -215,8 +229,8 @@ extension String{
     
     :returns: Bool with true value if it does
     */
-    func containsDate() ->Bool{
-        return self.getDates().count>0 ? true : false
+    func containsDate() -> Bool {
+        return self.getDates().count > 0
     }
     
     
@@ -225,8 +239,34 @@ extension String{
     
     :returns: Bool with true value if it does
     */
-    func containsLink() -> Bool{
-        return self.getLinks().count>0 ? true :false
+    func containsLink() -> Bool {
+        return self.getLinks().count > 0
     }
+
+    /**
+    :returns: Base64 encoded string
+    */
+    func encodeToBase64Encoding() -> String {
+        let utf8str = self.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
+        let base64EncodedString = utf8str?.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.fromRaw(0)!)
+        return base64EncodedString!
+    }
+    
+    /**
+    :returns: Decoded Base64 string
+    */
+    func decodeFromBase64Encoding() -> String {
+        let base64data = NSData(base64EncodedString: self, options: NSDataBase64DecodingOptions.fromRaw(0)!)
+        let decodedString = NSString(data: base64data, encoding: NSUTF8StringEncoding)
+        return decodedString
+    }
+
+    /**
+        Float value from a string
+    */
+    var floatValue: Float {
+        return (self as NSString).floatValue
+    }
+
     
 }
