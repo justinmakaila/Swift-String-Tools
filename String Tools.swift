@@ -79,7 +79,6 @@ extension String{
             return tagger?.tagAtIndex(0, scheme: NSLinguisticTagSchemeLanguage, tokenRange: nil, sentenceRange: nil)
         }
             return nil
-        
     }
     
     /**
@@ -124,8 +123,6 @@ extension String{
         } else {
             return !(self.utf16Count > tweetLength || self.utf16Count == 0 || self.isOnlyEmptySpacesAndNewLineCharacters())
         }
-
-        return true
     }
     
     /**
@@ -133,31 +130,44 @@ extension String{
     
     :returns: [String!]
     */
-    func getLinks() -> [String!] {
+    func getLinks() -> [String] {
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error)
         let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let urlStrings = links.map() {
+        let someUrlStrings = links.map() {
             (t : NSTextCheckingResult) -> String! in
                 return t.URL.absoluteString
         }
 
+        var urlStrings:[String] = []
+        for urlString in someUrlStrings {
+            if let u = urlString {
+                urlStrings.append(u)
+            }
+        }
         return urlStrings
     }
     
     /**
     Gets an array of URLs for all links found in a String
     
-    :returns: [NSURL!]
+    :returns: [NSURL]
     */
-    func getURLs() -> [NSURL!] {
+    func getURLs() -> [NSURL] {
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error)
         let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let urls = links.map() {
+        let someUrls:[NSURL!] = links.map() {
             (t : NSTextCheckingResult) -> NSURL! in /*I'm using mapping beacuase it's cool! 😎*/
-            return t.URL}
+            return t.URL
+        }
         
+        var urls:[NSURL] = []
+        for url in someUrls {
+            if let u = url {
+                urls.append(u)
+            }
+        }
         return urls
     }
     
@@ -165,62 +175,79 @@ extension String{
     /**
     Gets an array of dates for all dates found in a String
     
-    :returns: [NSDate!]
+    :returns: [NSDate]
     */
-    func getDates() -> [NSDate!] {
+    func getDates() -> [NSDate] {
         let error : NSErrorPointer = NSErrorPointer()
         let detector  : NSDataDetector = NSDataDetector(types: NSTextCheckingType.Date.toRaw(), error: error)
         let links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let dates = links.map(){
+        let someDates = links.map(){
             (t : NSTextCheckingResult) -> NSDate! in
             return t.date
         }
-
+        var dates:[NSDate] = []
+        for date in someDates {
+            if let d = date {
+                dates.append(d)
+            }
+        }
         return dates
     }
     
     /**
     Gets an array of strings (hashtags #acme) for all links found in a String
     
-    :returns: [String!]
+    :returns: [String]
     */
-    func getHashtags() -> [String!] {
+    func getHashtags() -> [String] {
         let hashtagDetector = NSRegularExpression(pattern: "#(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
         let results = hashtagDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
-        let hashtags = results.map(){
+        let someHashtags = results.map(){
             (t : NSTextCheckingResult) -> String! in
                 let range :NSRange = t.rangeAtIndex(0)
                 return self.substringWithNSRange(range)
         }
         
+        var hashtags:[String] = []
+        for hashtag in someHashtags {
+            if let ht = hashtag {
+                hashtags.append(ht)
+            }
+        }
         return hashtags
     }
     
     /**
     Gets an array of distinct strings (hashtags #acme) for all hashtags found in a String
     
-    :returns: [String!]
+    :returns: [String]
     */
-    func getUniqueHashtags() ->[String!]{
-        return NSSet(array: self.getHashtags()).allObjects as [String!]
+    func getUniqueHashtags() -> [String] {
+        return NSSet(array: self.getHashtags()).allObjects as [String]
     }
     
     
     /**
     Gets an array of strings (mentions @apple) for all mentions found in a String
     
-    :returns: [String!]
+    :returns: [String]
     */
-    func getMentions() -> [String!] {
+    func getMentions() -> [String] {
         let mentionDetector = NSRegularExpression(pattern: "@(\\w+)", options: NSRegularExpressionOptions.CaseInsensitive, error: nil)
         let results = mentionDetector.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
 
-        let mentions = results.map() {
+        let someMentions = results.map() {
                 (t : NSTextCheckingResult) -> String! in
                 let range :NSRange = t.rangeAtIndex(0)
             return self.substringWithNSRange(range)
         }
         
+        var mentions:[String] = []
+        for mention in someMentions {
+            if let m = mention {
+                mentions.append(m)
+            }
+        }
         return mentions
     }
     
@@ -247,9 +274,9 @@ extension String{
     :returns: Base64 encoded string
     */
     func encodeToBase64Encoding() -> String {
-        let utf8str = self.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)
-        let base64EncodedString = utf8str?.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.fromRaw(0)!)
-        return base64EncodedString!
+        let utf8str = self.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
+        let base64EncodedString = utf8str.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.fromRaw(0)!)
+        return base64EncodedString
     }
     
     /**
