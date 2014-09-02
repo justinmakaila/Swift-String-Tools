@@ -242,13 +242,7 @@ extension String{
             return self.substringWithNSRange(range)
         }
         
-        var mentions:[String] = []
-        for mention in someMentions {
-            if let m = mention {
-                mentions.append(m)
-            }
-        }
-        return mentions
+        return someMentions.map { $0 }
     }
     
     /**
