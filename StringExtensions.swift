@@ -130,10 +130,10 @@ extension String {
             detector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error),
             links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
     
-        return links.map { textCheckingResult -> String in
-            if let urlString = textCheckingResult.URL?.absoluteString {
-                return urlString
-            }
+        return links.filter { link in
+            return link.URL != nil
+        }.map { link -> String in
+            return link.URL!.absoluteString!
         }
     }
     
@@ -147,10 +147,10 @@ extension String {
             detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error),
             links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         
-        return links.map { textCheckingResult -> NSURL in
-            if let url = textCheckingResult.URL {
-                return url
-            }
+        return links.filter { link in
+            return link.URL != nil
+        }.map { link -> NSURL in
+            return link.URL!
         }
     }
     
@@ -165,10 +165,10 @@ extension String {
             detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Date.toRaw(), error: error),
             links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
 
-        return links.map { textCheckingResult -> NSDate in
-            if let date = textCheckingResult.date {
-                return date
-            }
+        return links.filter { link in
+            return link.date != nil
+        }.map { link -> NSDate in
+            return link.date!
         }
     }
     
@@ -272,5 +272,9 @@ extension String {
     subscript (range: NSRange) -> String {
         let end = range.location + range.length
         return self[Range(start: range.location, end: end)]
+    }
+    
+    subscript (substring: String) -> Range<String.Index>? {
+        return rangeOfString(substring, options: NSStringCompareOptions.LiteralSearch, range: Range(start: startIndex, end: endIndex), locale: NSLocale.currentLocale())
     }
 }
