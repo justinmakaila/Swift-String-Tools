@@ -70,12 +70,14 @@ extension String {
     // MARK: Linguistics
     
     /**
-     *  Returns the langauge of a String
+     *  Returns the langauge of a String.
+     *
      *  @discussion: String has to be at least 4 characters, otherwise the method will return nil.
      *
      *  @return: String? representing the langague of the string (e.g. en, fr, or und for undefined).
      */
     func detectLanguage() -> String? {
+        // ???: Is there a reason why 4 letters is required? If so, a note should be made in the discussion section.
         if self.length > 4 {
             var token : dispatch_once_t = 0
             var tagger : NSLinguisticTagger?
@@ -93,6 +95,7 @@ extension String {
     
     /**
      *  Check the text direction of a given String.
+     *
      *  @discussion: String has to be at least 4 characters, otherwise the method will return false.
      *
      *  @return: Bool true if the string was writting in a right to left langague (e.g. Arabic, Hebrew)
