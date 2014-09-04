@@ -45,4 +45,4 @@ String Tools is under MIT License. Check the license file for more information.
 
 
 ### Contact Info
-Follow us on Twitter: [@jamal_2](https:///www.twitter.com/jamal_2) [@justinmakaila](https://www.twitter.com/justinmakaila)
+Follow us on Twitter: [@jamal_2](https:///www.twitter.com/jamal_2), [@justinmakaila](https://www.twitter.com/justinmakaila)
