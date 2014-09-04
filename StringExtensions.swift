@@ -60,7 +60,7 @@ extension String {
     /**
     *  Converts self to Float.
     *
-    *  @return Float representation of self.
+    *  :return: Float representation of self.
     */
     var floatValue: Float {
         return (self as NSString).floatValue
@@ -72,9 +72,9 @@ extension String {
     /**
      *  Returns the langauge of a String.
      *
-     *  @discussion: String has to be at least 4 characters, otherwise the method will return nil.
+     *  :discussion: String has to be at least 4 characters, otherwise the method will return nil.
      *
-     *  @return: String? representing the langague of the string (e.g. en, fr, or und for undefined).
+     *  :return: String? representing the langague of the string (e.g. en, fr, or und for undefined).
      */
     func detectLanguage() -> String? {
         // ???: Is there a reason why 4 letters is required? If so, a note should be made in the discussion section.
@@ -96,9 +96,9 @@ extension String {
     /**
      *  Check the text direction of a given String.
      *
-     *  @discussion: String has to be at least 4 characters, otherwise the method will return false.
+     *  :discussion: String has to be at least 4 characters, otherwise the method will return false.
      *
-     *  @return: Bool true if the string was writting in a right to left langague (e.g. Arabic, Hebrew)
+     *  :return: Bool true if the string was writting in a right to left langague (e.g. Arabic, Hebrew)
      */
     func isRightToLeft() -> Bool {
         let language = self.detectLanguage()
@@ -109,7 +109,7 @@ extension String {
      *
      *  Check that a String is only made of white spaces, and new line characters.
      *
-     *  @return Bool indicating if the string is empty characters.
+     *  :return: Bool indicating if the string is empty characters.
      */
     func isOnlyEmptySpacesAndNewLineCharacters() -> Bool {
         return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).length == 0
@@ -120,7 +120,7 @@ extension String {
     /**
      *  Check that a String is 'tweetable' can be used in a tweet.
      *
-     *  @return Bool indicating if self is tweetable.
+     *  :return: Bool indicating if self is tweetable.
      */
     func isTweetable() -> Bool {
         let tweetLength = 140,
@@ -138,7 +138,7 @@ extension String {
     /**
     *  Gets an array of URLs for all links found in self.
     *
-    *  @return [NSURL] representing the URLs found in self
+    *  :return: [NSURL] representing the URLs found in self
     */
     func getURLs() -> [NSURL] {
         let error: NSErrorPointer = NSErrorPointer(),
@@ -155,10 +155,10 @@ extension String {
     /**
      *  Gets an array of Strings for all links found in self.
      *
-     *  @discussion Uses getURLs() internally, returning the absoluteString
-     *              of each URL.
+     *  :discussion: Uses getURLs() internally, returning the absoluteString
+     *               of each URL.
      *
-     *  @return [String] representing the links found in self
+     *  :return: [String] representing the links found in self
      */
     func getLinks() -> [String] {
         return getURLs().map { url -> String in
@@ -169,7 +169,7 @@ extension String {
     /**
      *  Gets an array of dates for all dates found in self.
      *
-     *  @return [NSDate]
+     *  :return: [NSDate]
      */
     func getDates() -> [NSDate] {
         let error: NSErrorPointer = NSErrorPointer(),
@@ -186,12 +186,12 @@ extension String {
     /**
      *  Gets an array of hashtags found in self.
      *
-     *  @param includeDevice a Bool indicating whether or not the hashtag device (#) should
+     *  :param: includeDevice a Bool indicating whether or not the hashtag device (#) should
      *          be included in the results. Default is true.
      *
-     *  @discussion Returns an empty array if there are no matches.
+     *  :discussion: Returns an empty array if there are no matches.
      *
-     *  @return [String] of substrings matching the regex #(\w+).
+     *  :return: [String] of substrings matching the regex #(\w+).
      */
     func getHashtags(includeDevice: Bool = true) -> [String] {
         return self.getMatchesForPrefix("#", includePrefix: includeDevice)
@@ -200,10 +200,10 @@ extension String {
     /**
      *  Gets an array of unique hashtags found in self.
      *
-     *  @param includeDevice a Bool indicating whether or not the hashtag device (#) should
+     *  :param: includeDevice a Bool indicating whether or not the hashtag device (#) should
      *         be included in the results. Default is true.
      *
-     *  @return [String] of unique substrings matching the regex #(\w+).
+     *  :return: [String] of unique substrings matching the regex #(\w+).
      */
     func getUniqueHashtags(includeDevice: Bool = true) -> [String] {
         return NSSet(array: self.getHashtags(includeDevice: includeDevice)).allObjects as [String]
@@ -212,12 +212,12 @@ extension String {
     /**
      *  Gets an array of mentions found in self.
      *
-     *  @param includeDevice a Bool indicating whether or not the mention device (@) should
+     *  :param: includeDevice a Bool indicating whether or not the mention device (@) should
      *         be included in the results. Default is true.
      *
-     *  @discussion Returns an empty array if no matches are found.
+     *  :discussion: Returns an empty array if no matches are found.
      *
-     *  @return [String] of substrings matching the regex @(\w+).
+     *  :return: [String] of substrings matching the regex @(\w+).
      */
     func getMentions(includeDevice: Bool = true) -> [String] {
         return self.getMatchesForPrefix("@", includePrefix: includeDevice)
@@ -226,10 +226,10 @@ extension String {
     /**
      *  Gets an array of unique mentions found in self.
      *
-     *  @param includeDevice a Bool indicating whether or not the mention device (@) should
+     *  :param: includeDevice a Bool indicating whether or not the mention device (@) should
      *         be included in the results. Default is true.
      *
-     *  @return [String] of unique substrings matching the regex @(\w+).
+     *  :return: [String] of unique substrings matching the regex @(\w+).
      */
     func getUniqueMentions(includeDevice: Bool = true) -> [String] {
         return NSSet(array: self.getMentions(includeDevice: includeDevice)).allObjects as [String]
@@ -238,14 +238,14 @@ extension String {
     /**
      *  Gets an array of strings with the prefix.
      *
-     *  @param prefix The prefix to search for.
-     *  @param includePrefix Bool indicating whether or not the prefix should be included
+     *  :param: prefix The prefix to search for.
+     *  :param: includePrefix Bool indicating whether or not the prefix should be included
      *         in the results. Default is true.
      *
-     *  @discussion Internally uses getMatchesForRegex(...). Returns an empty array if no
+     *  :discussion: Internally uses getMatchesForRegex(...). Returns an empty array if no
      *              matches are found.
      *
-     *  @return [String] of substrings matching the regex "`prefix`(\w+)".
+     *  :return: [String] of substrings matching the regex "`prefix`(\w+)".
      */
     func getMatchesForPrefix(prefix: String, includePrefix: Bool = true) -> [String] {
         if let results = self.getMatchesForRegex("\(prefix)(\\w+)") {
@@ -264,13 +264,13 @@ extension String {
     /**
      *  Gets an array of strings matching `regex` found in self.
      *
-     *  @param regex The regex pattern to use for matching.
-     *  @param options The NSRegularExpressionOptions to be used for matching.
+     *  :param: regex The regex pattern to use for matching.
+     *  :param: options The NSRegularExpressionOptions to be used for matching.
      *                 Default is NSRegularExpressionOptions.CaseInsensitive.
      *
-     *  @discussion If `regex` is not a valid regular expression pattern, this will return nil.
+     *  :discussion: If `regex` is not a valid regular expression pattern, this will return nil.
      *
-     *  @return [String]? an array of String objects matching `regex`
+     *  :return: [String]? an array of String objects matching `regex`
      */
     func getMatchesForRegex(regex: String, options: NSRegularExpressionOptions = .CaseInsensitive) -> [String]? {
         var error: NSError?
@@ -290,7 +290,7 @@ extension String {
     /**
      *  Checks if self contains a date.
      *
-     *  @return Bool true if there is a date present, else false.
+     *  :return: Bool true if there is a date present, else false.
      */
     func containsDate() -> Bool {
         return self.getDates().count > 0
@@ -299,7 +299,7 @@ extension String {
     /**
      *  Check if a String contains a link in it.
      *
-     *  @return Bool true if there is a link present, else false.
+     *  :return: Bool true if there is a link present, else false.
      */
     func containsLink() -> Bool {
         return self.getLinks().count > 0
@@ -308,7 +308,7 @@ extension String {
     /**
      *  Encodes self to Base64.
      *
-     *  @return String self encoded to Base64.
+     *  :return: String self encoded to Base64.
      */
     func encodeBase64() -> String {
         let utf8str = self.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
@@ -319,7 +319,7 @@ extension String {
     /**
      *  Decodes self from Base64.
      *
-     *  @return String self decoded from Base64
+     *  :return: String self decoded from Base64
      */
     func decodeBase64() -> String {
         let base64data = NSData(base64EncodedString: self, options: NSDataBase64DecodingOptions.fromRaw(0)!)
