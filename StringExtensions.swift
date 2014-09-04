@@ -42,7 +42,7 @@ extension String {
         return self.utf16Count
     }
     
-    //MARK: - Linguistics
+    //MARK: Linguistics
     
     /**
     Returns the langauge of a String
@@ -258,10 +258,18 @@ extension String {
     
     // MARK: Subscript Methods
     
+    /**
+     *  Allows subscript access to characters in a String
+     *  by integers.
+     */
     subscript (i: Int) -> String {
         return String(Array(self)[i])
     }
     
+    /**
+     *  Allows subscript access to characters in a String
+     *  using integer Ranges.
+     */
     subscript (r: Range<Int>) -> String {
         var start = advance(startIndex, r.startIndex),
             end = advance(startIndex, r.endIndex)
@@ -269,12 +277,26 @@ extension String {
         return substringWithRange(Range(start: start, end: end))
     }
     
+    /**
+     *  Allows subscript access to characters in a String
+     *  using NSRange.
+     */
     subscript (range: NSRange) -> String {
         let end = range.location + range.length
         return self[Range(start: range.location, end: end)]
     }
     
+    /**
+     *  Allows subscript access to characters in a String
+     *  using a String parameter to represent a substring.
+     */
     subscript (substring: String) -> Range<String.Index>? {
         return rangeOfString(substring, options: NSStringCompareOptions.LiteralSearch, range: Range(start: startIndex, end: endIndex), locale: NSLocale.currentLocale())
+    }
+}
+
+extension NSString {
+    subscript (substring: String) -> NSRange? {
+        return rangeOfString(substring)
     }
 }
