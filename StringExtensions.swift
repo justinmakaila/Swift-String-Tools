@@ -51,10 +51,10 @@ extension String {
        Indicates if the string is an Email via NSDataDetector
      */
     var isEmail: Bool {
-        let dataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: nil),
-            firstMatch = dataDetector.firstMatchInString(self, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, self.length))
+        let dataDetector = NSDataDetector(types: NSTextCheckingType.Link.rawValue, error: nil),
+            firstMatch = dataDetector?.firstMatchInString(self, options: NSMatchingOptions.ReportCompletion, range: NSMakeRange(0, self.length))
             
-            return (firstMatch?.range.location != NSNotFound && firstMatch?.URL?.scheme == "mailto")
+        return (firstMatch?.range.location != NSNotFound && firstMatch?.URL?.scheme == "mailto")
     }
     
     /**
@@ -141,7 +141,7 @@ extension String {
     */
     func getURLs() -> [NSURL] {
         let error: NSErrorPointer = NSErrorPointer(),
-        detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.toRaw(), error: error),
+        detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.rawValue, error: error)!,
         links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         
         return links.filter { link in
@@ -172,7 +172,7 @@ extension String {
      */
     func getDates() -> [NSDate] {
         let error: NSErrorPointer = NSErrorPointer(),
-            detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Date.toRaw(), error: error),
+            detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Date.rawValue, error: error)!,
             links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
 
         return links.filter { link in
@@ -276,7 +276,7 @@ extension String {
         let regularExpression = NSRegularExpression(pattern: regex, options: options, error: &error)
         
         if error == nil {
-            if let results = regularExpression.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as? [NSTextCheckingResult] {
+            if let results = regularExpression?.matchesInString(self, options: NSMatchingOptions.WithoutAnchoringBounds, range: NSMakeRange(0, self.utf16Count)) as? [NSTextCheckingResult] {
                 return results.map { textCheckingResult -> String in
                     return self[textCheckingResult.rangeAtIndex(0)]
                 }
@@ -312,7 +312,7 @@ extension String {
     func encodeBase64() -> String {
         let utf8str = self.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
         
-        return utf8str.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.fromRaw(0)!)
+        return utf8str.base64EncodedStringWithOptions(NSDataBase64EncodingOptions(0))
     }
     
     /**
@@ -321,9 +321,9 @@ extension String {
        :return: String self decoded from Base64
      */
     func decodeBase64() -> String {
-        let base64data = NSData(base64EncodedString: self, options: NSDataBase64DecodingOptions.fromRaw(0)!)
+        let base64data = NSData(base64EncodedString: self, options: NSDataBase64DecodingOptions(0))!
         
-        return NSString(data: base64data, encoding: NSUTF8StringEncoding)
+        return NSString(data: base64data, encoding: NSUTF8StringEncoding)!
     }
 }
 
