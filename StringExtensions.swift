@@ -144,11 +144,13 @@ extension String {
         detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Link.rawValue, error: error)!,
         links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
         
-        return links.filter { link in
-            return link.URL != nil
-        }.map { link -> NSURL in
-            return link.URL!
-        }
+        return links.reduce([], combine: { links, link in
+            if let url = link.URL {
+                return links + [url]
+            }
+            
+            return links
+        })
     }
     
     /**
@@ -175,11 +177,13 @@ extension String {
             detector: NSDataDetector = NSDataDetector(types: NSTextCheckingType.Date.rawValue, error: error)!,
             links = detector.matchesInString(self, options: NSMatchingOptions.WithTransparentBounds, range: NSMakeRange(0, self.utf16Count)) as [NSTextCheckingResult]
 
-        return links.filter { link in
-            return link.date != nil
-        }.map { link -> NSDate in
-            return link.date!
-        }
+        return links.reduce([], combine: { dates, link in
+            if let date = link.date {
+                return dates + [date]
+            }
+            
+            return dates
+        })
     }
     
     /**
